@@ -14,14 +14,14 @@ if (isset($_POST['createCategory'])) {
 
     
     if ($type == 'image/svg+xml' || $type == 'image/png' || $type == 'image/jpeg') {
-        if (move_uploaded_file($tmpName, '../assets/images/icons/' . $fileName)) {
-   
+
             $checkQuery = "SELECT * FROM `categories` WHERE `categoryName` = '$catName'";
             $checkResult = mysqli_query($conn, $checkQuery);
             if (mysqli_num_rows($checkResult) > 0) {
-                echo "<script> alert('Category name already exists. Please choose a different name.') </script>";
+
+                $err = "<p style='color:red'>Category name already exists. Please choose a different name.</p>";
             } else {
-            
+            if (move_uploaded_file($tmpName, '../assets/images/icons/' . $fileName)) {
                 $query = "INSERT INTO `categories` (`categoryName`, `categoryDate`, `categoryDesc`, `categoryStatus`, `icon`) VALUES ('$catName', '$catDate', '$catDesc', '$catStatus', '$fileName')";
 
                 if (mysqli_query($conn, $query)) {
@@ -73,6 +73,7 @@ if (isset($_POST['createCategory'])) {
                             <div class="card mb-6 shadow border-0">
                                 <!-- card body -->
                                 <div class="card-body p-6 ">
+                                <?php echo @$err;?>
                                     <h4 class="mb-5 h5">Category Image</h4>
                                     <div class="mb-4 d-flex">
                                         <div class="position-relative" >
@@ -92,17 +93,17 @@ if (isset($_POST['createCategory'])) {
 
                                     </div>
                                     <h4 class="mb-4 h5 mt-5">Category Information</h4>
-
+                                   
                                     <div class="row">
                                         <!-- input -->
                                         <div class="mb-3 col-lg-6">
                                             <label class="form-label">Category Name</label>
-                                            <input type="text" name="name" class="form-control" placeholder="Category Name"
+                                            <input type="text" name="name" value="<?php echo @$_POST['name'];?>" class="form-control" placeholder="Category Name"
                                                 required>
                                         </div>
                                         <div class="mb-3 col-lg-6">
                                             <label class="form-label">Date</label>
-                                            <input type="date" name="date" class="form-control flatpickr" placeholder="Select Date">
+                                            <input type="date" name="date" value="<?php echo @$_POST['date'];?>" class="form-control flatpickr" placeholder="Select Date">
                                         </div>
 
                                         <div>
@@ -114,19 +115,23 @@ if (isset($_POST['createCategory'])) {
 
                                             <!-- <div class="py-8" id="editor"></div> -->
                                         </div>
-                                        <textarea name="description"   rows="10"></textarea>
+                                        <textarea name="description"   rows="10"><?php echo @$_POST['name'];?></textarea>
 
                                         <!-- input -->
                                         <div class="mb-3 col-lg-12 ">
                                             <label class="form-label" id="catductSKU">Status</label><br>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="status"
+                                                <input class="form-check-input" type="radio" name="status" <?php if( @$_POST['status'] == 1){
+                                                    echo "checked";
+                                                }?>
                                                     id="inlineRadio1" value="1" checked>
                                                 <label class="form-check-label" for="inlineRadio1">Active</label>
                                             </div>
                                             <!-- input -->
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="status"
+                                                <input class="form-check-input" type="radio" name="status" <?php if( @$_POST['status'] == 0){
+                                                    echo "checked";
+                                                }?>
                                                     id="inlineRadio2" value="0" >
                                                 <label class="form-check-label" for="inlineRadio2">Disabled</label>
                                             </div>
