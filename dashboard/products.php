@@ -58,18 +58,17 @@ $res = mysqli_query($conn, $products);
                   <!-- form -->
                   <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
                   <form class="d-flex" role="search" method="get" action="products.php">
-                     <input class="form-control" type="search" name="search" placeholder="Search Category" aria-label="Search">
-                     <button class="btn btn-primary" type="submit">Search</button>
+                     <input class="form-control" type="search" id="search" name="search" placeholder="Search Category" aria-label="Search">
                     </form>
 
                   </div>
                   <!-- select option -->
                   <div class="col-lg-2 col-md-4 col-12">
-                    <select class="form-select">
-                      <option selected>Status</option>
+                    <select class="form-select" id="filter">
+                      <option value="*" selected>All</option>
                       <option value="1">Active</option>
-                      <option value="2">Deactive</option>
-                      <option value="3">Draft</option>
+                      <option value="0">Deactive</option>
+                      <option value="2">Out of Stock</option>
                     </select>
                   </div>
                 </div>
@@ -77,7 +76,7 @@ $res = mysqli_query($conn, $products);
               <!-- card body -->
               <div class="card-body p-0">
                 <!-- table -->
-                <div class="table-responsive">
+                <div class="table-responsive" id="table">
                 <?php 
                   if(mysqli_num_rows($res)>0){
                   ?>
@@ -101,7 +100,7 @@ $res = mysqli_query($conn, $products);
                         <th></th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tableBody">
                   <?php 
                 while($row = mysqli_fetch_assoc($res)){
 
@@ -216,9 +215,54 @@ if($data['total']>0){
 
 <!-- Theme JS -->
 <script src="../assets/js/theme.min.js"></script>
+<script>
+$(document).ready(function () {
+  $("#search").on("keyup",function(){
+
+  let searchVal = $(this).val();
+  // console.log(searchVal) ;
+
+$.ajax(
+  {
+    url:"ajax-search.php",
+    type:"POST",
+    data:{
+      searchPro: searchVal,
+    },
+    success:function(data){
+      $("#table").html(data);
+    },
+  }
+)
+
+
+  });
+
+  // Filter Products 
+  $("#filter").on("change",function(){
+    filterValue = $(this).val();
+
+    $.ajax(
+  {
+
+    url: "ajax-filter.php",
+          type: "POST",
+          data: {
+            productStatus: filterValue
+          },
+success: function (data){
+
+  $("#table").html(data)
+
+}
+
+  });
+
+});
+
+});
+
+</script>
 
 </body>
-
-
-<!-- Mirrored from freshcart.codescandy.com/dashboard/products.php by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 31 Mar 2023 10:11:08 GMT -->
 </html>
